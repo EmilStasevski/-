@@ -10,6 +10,6 @@ the CEC on elections in Russia**.
 The project description is available [here](./Project-info.pdf).
 
 _Authors and Contacts:_
-* Сташевски Эмиль [@emilstrider](https://t.me/emilstrider)
-* Рубанов Владислав [@rubanoww](https://t.me/rubanoww)
-* Жужлев Борис [@Zhbzhb](https://t.me/Zhbzhb)
+* Staszevski Emil [@emilstrider](https://t.me/emilstrider)
+* Rubanov Vladislav [@rubanoww](https://t.me/rubanoww)
+* Zhuzhlev Boris [@Zhbzhb](https://t.me/Zhbzhb)
