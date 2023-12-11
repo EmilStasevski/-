@@ -9,6 +9,9 @@ the CEC on elections in Russia**.
 
 The project description is available [here](./Project-info.pdf).
 
+### Repository structure
+* [data](./data): sample datasets on elections at various levels
+
 _Authors and Contacts:_
 * Staszevski Emil [@emilstrider](https://t.me/emilstrider)
 * Rubanov Vladislav [@rubanoww](https://t.me/rubanoww)
