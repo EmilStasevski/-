@@ -14,7 +14,7 @@ The project description is available [here](./Project-info.pdf).
 * [data](./data): sample datasets on elections at various levels
 * [code](./code): the project code, including 
   * [code/back](./code/back) - backend part and
-  * [code/front](./code/front) - frontend part
+  * [code/front](./code/front%20(React%20App)) - frontend part
 
 _Authors and Contacts:_
 * Staszevski Emil [@emilstrider](https://t.me/emilstrider)
