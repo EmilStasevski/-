@@ -2,3 +2,6 @@ bs4
 requests
 selenium
 lxml
+pandas
+numpy
+openpyxl
