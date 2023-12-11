@@ -9,6 +9,7 @@ and creating a service that allows **analyzing and downloading data from
 the CEC on elections in Russia**.
 
 The project description is available [here](./Project-info.pdf).
+The draft version of React app lies [here](https://zj523c.csb.app/)
 
 ### Repository structure
 * [data](./data): sample datasets on elections at various levels
