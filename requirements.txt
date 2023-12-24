@@ -1,7 +1,18 @@
-bs4
-requests
-selenium
-lxml
-pandas
-numpy
-openpyxl
+# python==3.9.18
+beautifulsoup4==4.12.2
+bs4==0.0.1
+google-api-core==2.15.0
+google-api-python-client==2.111.0
+google-auth==2.25.2
+google-auth-httplib2==0.2.0
+google-cloud-core==2.4.1
+google-cloud-firestore==2.14.0
+google-cloud-storage==2.14.0
+google-crc32c==1.5.0
+google-resumable-media==2.7.0
+googleapis-common-protos==1.62.0
+lxml==4.9.3
+numpy==1.26.2
+pandas==2.1.4
+requests==2.31.0
+selenium==4.16.0
