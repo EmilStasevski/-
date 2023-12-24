@@ -1,8 +1,8 @@
-def parse_constitution(path_to_chromedriver):
+def parse_presidential(path_to_chromedriver):
     """
-    Функция для парсинга результатов голосования поправок в Конституцию РФ 01.07.2020 г.
+    Функция для парсинга результатов выборов президента РФ в 2004, 2008, 2012 и 2018 годах
     :param path_to_chromedriver: локальный путь к драйверу для работы selenium
-    :return: pandas.DataFrame с результатами выборов по всем регионам РФ на момент выборов
+    :return: х4 pandas.DataFrame с результатами выборов по всем регионам РФ на момент выборов
     с разбивкой по ТИК-ам
     """
     import pandas as pd
@@ -19,6 +19,11 @@ def parse_constitution(path_to_chromedriver):
     from selenium.webdriver.common.keys import Keys
     from selenium.webdriver.common.by import By
 
+    from parsing_presidential_tools.parse_2004_presidential_elections import parse_2004_presidential_elections
+    from parsing_presidential_tools.parse_2008_presidential_elections import parse_2008_presidential_elections
+    from parsing_presidential_tools.parse_2012_presidential_elections import parse_2012_presidential_elections
+    from parsing_presidential_tools.parse_2018_presidential_elections import parse_2018_presidential_elections
+
     from IPython.display import clear_output
     from dateutil.parser import parse
 
@@ -34,10 +39,10 @@ def parse_constitution(path_to_chromedriver):
     filters_show = br.find_element(By.CSS_SELECTOR, ".filter")
     filters_show.click()
 
-    # Проставляем временные ограничения для поиска, берем даты, в которые входит
-    # голосование по поправкам в конституцию
-    inp_start_date = '01.01.2020'
-    inp_end_date = '31.12.2020'
+    # Проставляем временные ограничения для поиска, берем даты, в которые входят
+    # все выборы президента
+    inp_start_date = '01.01.2000'
+    inp_end_date = '31.12.2023'
     # Парсим даты
     date_start = parse(inp_start_date, dayfirst=True)
     date_finish = parse(inp_end_date, dayfirst=True)
@@ -50,6 +55,8 @@ def parse_constitution(path_to_chromedriver):
     start_date = br.find_element(By.CSS_SELECTOR, "#start_date")
     start_date.clear()
     start_date.send_keys(inp_start_date)
+
+    sleep(5)
 
     end_date = br.find_element(By.CSS_SELECTOR, "#end_date")
     end_date.clear()
@@ -64,6 +71,7 @@ def parse_constitution(path_to_chromedriver):
     for i in elect_level_useropt:
         elect_level.send_keys(i)
         elect_level.send_keys(Keys.ENTER)
+        sleep(5)
         elect_level.clear()
 
     # Фильтр на вид выборов
@@ -75,6 +83,7 @@ def parse_constitution(path_to_chromedriver):
     for i in elect_vid_useropt:
         elect_vid.send_keys(i)
         elect_vid.send_keys(Keys.ENTER)
+        sleep(5)
         elect_vid.clear()
 
     # Фильтр на тип выборов
@@ -87,6 +96,7 @@ def parse_constitution(path_to_chromedriver):
     for i in elect_type_useropt:
         elect_type.send_keys(i)
         elect_type.send_keys(Keys.ENTER)
+        sleep(5)
         elect_type.clear()
 
     # Фильтр на существующие сейчас субъекты
@@ -104,7 +114,8 @@ def parse_constitution(path_to_chromedriver):
         'Магаданская область', 'Московская область', 'Мурманская область', 'Нижегородская область',
         'Новгородская область', 'Новосибирская область', 'Омская область', 'Оренбургская область', 'Орловская область',
         'Пензенская область', 'Псковская область', 'Ростовская область', 'Рязанская область', 'Самарская область',
-        'Саратовская область', 'Сахалинская область', 'Свердловская область', 'Смоленская область', 'Тамбовская область',
+        'Саратовская область', 'Сахалинская область', 'Свердловская область', 'Смоленская область',
+        'Тамбовская область',
         'Тверская область', 'Томская область', 'Тульская область', 'Тюменская область', 'Ульяновская область',
         'Херсонская область', 'Челябинская область',
         'Ярославская область', 'Москва', 'Санкт-Петербург', 'Севастополь', 'Еврейская', 'Ненецкий', 'Ханты-Мансийский',
@@ -121,6 +132,7 @@ def parse_constitution(path_to_chromedriver):
         sleep(1)  # немного ждем
         br.implicitly_wait(5)
         elect_actreg.clear()
+        sleep(1)
 
     # Фильтр на упраздненные субъекты
     elect_oldreg_allopt = ['Камчатская область', 'Пермская область', 'Читинская область',
@@ -151,7 +163,7 @@ def parse_constitution(path_to_chromedriver):
                               'Смешанная - пропорциональная и мажоритарная',
                               'Пропорциональная и мажоритарная по общерегиональному']
 
-    elect_syst_useropt = elect_syst_allopt_site[:]  # выберем все
+    elect_syst_useropt = []  # не выбираем
 
     elect_syst = br.find_element(By.CSS_SELECTOR, "[aria-describedby='select2-sxemavib-container']")
     for i in elect_syst_useropt:
@@ -165,106 +177,63 @@ def parse_constitution(path_to_chromedriver):
     search_button = br.find_element(By.ID, "calendar-btn-search")
     search_button.click()
 
-    # Выбираем нужные выборы (по поправкам)
-    elections_button = br.find_element(By.CSS_SELECTOR,
-                                       "#vibory > ul > li:nth-child(2) > div > div.col-12.col-md-8 > a")
-    elections_button.click()
-
     # Забираем код страницы
     page = br.page_source
     soup = BeautifulSoup(page)
     dom = etree.HTML(str(soup))
 
-    # Ищем ссылки на результаты по регионам
-    regions = soup.find_all('li', attrs={'id': '100100163596969'})[0]
-    links = set()
+    # все найденные выборы
+    elections = soup.find_all('ul', attrs={'class': 'list-group list-group-flush vibory-list'})[0]
 
-    # Собираем ссылки
-    for region in regions.find_all('li'):
-        rel_link = region.find_all('a')[1].get('href')  # link
-        full_link = 'http://www.vybory.izbirkom.ru/' + rel_link
-        links.add(full_link)
+    # Собираем ссылки на страницы с выборами каждого года
+    elections_links = list()
 
-    print(f'[INFO] найдено {len(links)} ссылок')
+    for election in elections.find_all('li'):
+        election_info = election.find_all('a')
+        if len(election_info) > 0:
+            if 'президент' in election_info[0].text.lower():
+                elections_links.append(election_info[0].get('href'))
 
-    # Собираем инфо по регионам
-    for i, link in enumerate(links):
-        # Открываем новый браузер с новым регионом
-        # В этом цикле ожидание для исполнения кода будет долгим, чтобы избежать капчи
+    election_years = ['2004', '2008', '2012', '2018']
+    region_links_all_years = []
+
+    for i, elections_link in enumerate(elections_links):
+        # Открываем ссылку с выборами
         br = wb.Chrome(service=s)
 
-        br.get(link)
+        br.get(elections_link)
         sleep(10)
-        # Выбираем раздел с результатами
-        results_button = br.find_element(By.CSS_SELECTOR, "#vote-results-name")
-        results_button.click()
-        sleep(10)
-        # Выбираем нужное представление данных ("Сводная таблица итогов голосования")
-        table_button = br.find_element(By.CSS_SELECTOR,
-                                       r"#vote-results > table > tbody > tr.trReport.\32 0200701 > td > a")
-        table_button.click()
-        sleep(10)
-        # Забираем код страницы
         page = br.page_source
         soup = BeautifulSoup(page)
-        # Имя комиссии (регион)
-        commission_name = soup.find_all('table', attrs={'class': 'table-borderless', 'width': "100%"})[0].find_all('td',
-                                                                                                                   attrs={'class': 'text-center'})[0].text.strip()
-        # Дата
-        vote_data = soup.find_all('div', attrs={'class': 'table-wrapper'})[0]
-        # Собираем название ТИКов
-        sub_level_names = []
+        dom = etree.HTML(str(soup))
 
-        # здесь можно в a href собрать ссылки на уровень ниже
-        for sub_level_name in vote_data.find_all('th', attrs={'class': 'text-center'}):
-            sub_level_names.append(sub_level_name.text)
+        # Собираем ссылки на регионы в рамках этих выборов
+        regions = soup.find_all('ul', attrs={'style': 'opacity: 1; transition-duration: 0.5s;'})[0]
 
-        participation = []
-        # Собираем строки таблицы и пробегаемся по ним
-        rows = vote_data.find_all('tr')
+        region_links = set()
 
-        for row in rows:
-            cols = row.find_all('td', attrs={'align': 'right'})
-            if len(cols) == 0:
-                # если в строке нет данных (это не результаты)
+        for region in regions.find_all('li'):
+            if 'цик' in region.find_all('a')[1].text.lower():
+                # уровень всей России не нужен
                 continue
-            participation.append([col.text for col in cols])
+            rel_link = region.find_all('a')[1].get('href')  # link
+            full_link = 'http://www.vybory.izbirkom.ru/' + rel_link
+            region_links.add(full_link)
 
-        # В строках с голосами за/против есть число голосов и процент
-        # Разделим их
-        results_abs = []
-        results_percent = []
+        print(f'[INFO] за {election_years[i]} год найдено {len(region_links)} ссылок')
+        region_links_all_years.append(region_links)
+        br.close()
 
-        for row in rows:
-            cols = row.find_all('td', attrs={'class': 'text-right'})
-            if len(cols) == 0:
-                # если в строке нет данных (это не результаты)
-                continue
-            results_abs.append([col.text.split()[0] for col in cols])
-            results_percent.append([col.text.split()[1][:-1] for col in cols])  # чтобы избавиться от процента
+    # Теперь проходим по каждым выборам и каждому региону, парсим данные
+    for i, link in enumerate(region_links_all_years):
 
-        # Формируем датасет по региону
-        df = pd.DataFrame(
-            {'region': [commission_name] * len(sub_level_names[1:]),
-             'commission_name': sub_level_names[1:],
-             'voters_number': participation[0],
-             'issued_ballots_number': participation[1],
-             'turned_ballots_number': participation[2],
-             'bad_ballots_number': participation[3],
-             'for_votes_number': results_abs[0],
-             'for_votes_percent': results_percent[0],
-             'against_votes_number': results_abs[1],
-             'against_votes_percent': results_percent[1]
-             }
-        )
+        if i == 0:  # 2004
+            df_2004 = parse_2004_presidential_elections(region_links_all_years[i])
+        elif i == 1:  # 2008
+            df_2008 = parse_2008_presidential_elections(region_links_all_years[i])
+        elif i == 2:  # 2012
+            df_2012 = parse_2012_presidential_elections(region_links_all_years[i])
+        elif i == 3:  # 2018
+            df_2018 = parse_2018_presidential_elections(region_links_all_years[i])
 
-        df['for_votes_percent'] = df['for_votes_percent'].str.replace(',', '.')
-        df['against_votes_percent'] = df['against_votes_percent'].str.replace(',', '.')
-
-        # На первой итерации создадим stacked_df, дальше будем конкатенировать его с новым результатом
-        if i == 0:
-            stacked_df = df.copy()
-        else:
-            stacked_df = pd.concat([stacked_df, df])
-
-    return stacked_df
+    return df_2004, df_2008, df_2012, df_2018
